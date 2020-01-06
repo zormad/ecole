@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog appendTo="@(body)" header="création de status" widgetVar="statusnewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libellestatus:" for="libellestatus" />
+                <p:inputText id="libellestatus" value="#{enseignantBean.status.libellestatus}" title="Libellestatus" required="true" requiredMessage="The Libellestatus field is required."/>
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{enseignantBean.createStatus()}" update=":statusForm,@widgetVar(statusnewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(statusnewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)"  widgetVar="statusTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="statusForm">
+            <p:dataTable value="#{enseignantBean.listeStatus}" var="status" id="statusdata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune status trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{statusAccesBean.updateStatusRow}" />
+                <p:ajax event="rowEditCancel" listener="#{EleveBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des statuss
+
+                    <!--                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="statusdata" trigger="toggler" />-->
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Libellestatus"/>
+                    </f:facet>
+                    <h:outputText value="#{status.libellestatus}"/>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor id="statusEditor" />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton update=":statusupdate" immediate="#{enseignantBean.setModifierStatusToFalse()}"  oncomplete="PF('statusupdateDialog').show()" icon="ui-icon-search" title="View">
+                        <f:setPropertyActionListener value="#{status}" target="#{enseignantBean.selectedStatus}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{enseignantBean.deleteStatus(status)}" icon="ui-icon-close" update=":statusForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('statusnewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(statusTableDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header=" Status:#{enseignantBean.selectedStatus.libellestatus}" widgetVar="statusupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="statusupdate">
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libellestatus:" for="libellestatus" />
+                <p:inputText id="libellestatus" value="#{enseignantBean.status.libellestatus}" title="Libellestatus" required="true" requiredMessage="The Libellestatus field is required."/>
+
+                <f:facet name="footer">
+                    <c:if test="#{enseignantBean.modifierStatus}">
+                        <p:commandButton value="Modifier" action="#{enseignantBean.updateStatus}" update=":statusForm,@widgetVar(statusupdateDialog)" icon="ui-icon-star"/>
+                        <p:commandButton value="Annuler" update="@widgetVar(statusupdateDialog)" icon="ui-icon-star"/>
+                    </c:if>
+                    <c:if test="#{!enseignantBean.modifierStatus}">
+                        <p:commandButton value="Modifier" action="#{enseignantBean.setModifierStatusToTrue()}" update=":statusForm,:statusupdate"/>
+                        <p:commandButton value="Fermer" update="@widgetVar(statusupdateDialog)"/>
+                    </c:if>    
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

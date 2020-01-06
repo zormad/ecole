@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:h="http://xmlns.jcp.org/jsf/html"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <!--<title>admin home page</title>-->
+
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Création un niveau</ui:define>
+            <ui:define name="content">
+                <p:dialog appendTo="@(body)" header="création de classe" widgetVar="classenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="niveau:" for="niveau" />
+                            <p:selectOneMenu id="niveau" value="#{classeBean.niveau.idniveaux}" required="true" requiredMessage="Le niveau de la classe doit etre renseigné">
+                                <!-- TODO: update below reference to list of available classes-->
+                                <f:selectItems value="#{niveauxBean.liste}" var="niveau" itemLabel="#{niveau.libelleniveaux}" itemValue="#{niveau.idniveaux}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Description de la classe:" for="descriptionclasse" />
+                            <p:inputText id="descriptionclasse" value="#{classeBean.classe.descriptionclasse}" title="Description de la classe" />
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{classeBean.create()}" update=":classeForm,@widgetVar(classenewDialog)" icon="ui-icon-star"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>  
+
+                <p:dialog appendTo="@(body)" header="classe:#{classeBean.selectedClasse.descriptionclasse}" widgetVar="classeupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="classeupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <c:if test="#{classeBean.selectedClasse.idclasse!=nill}">
+                                <p:outputLabel value="niveau:" for="niveauU" />
+                                <p:selectOneMenu  disabled="#{!classeBean.modifier}" id="niveauU" value="#{classeBean.selectedClasse.idniveaux.idniveaux}" required="true" requiredMessage="Le niveau de la classe doit etre renseigné">
+                                    <!-- TODO: update below reference to list of available classes-->
+                                    <f:selectItems value="#{niveauxBean.liste}" var="niveau" itemLabel="#{niveau.libelleniveaux}" itemValue="#{niveau.idniveaux}"/>
+                                </p:selectOneMenu>
+                            </c:if>
+                            <p:outputLabel value="Description de la classe:" for="descriptionclasseU" />
+                            <p:inputText disabled="#{!classeBean.modifier}" id="descriptionclasseU" value="#{classeBean.selectedClasse.descriptionclasse}" title="Description de la classe" />
+                            <f:facet name="footer">
+
+                                <c:if test="#{classeBean.modifier}">
+                                    <p:commandButton value="Modifier" action="#{classeBean.updateClasse()}" update=":classeForm,@widgetVar(classeupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(classeupdateDialog)" icon="ui-icon-star"/>
+                                </c:if>
+                                <c:if test="#{!classeBean.modifier}">
+                                    <p:commandButton value="Modifier" actionListener="#{classeBean.setModifierToTrue()}" update=":classeupdate"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(classeupdateDialog)"/>
+                                </c:if> 
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>  
+                <h:form id="classeForm">
+                    <p:dataTable id="classedata" value="#{classeBean.liste}" var="item" selectionMode="single" selection="#{classeBean.selectedClasse}" rowKey="#{item.idclasse}">
+                        <p:ajax event="rowSelect" update=":classeForm"/>
+                        <p:ajax event="rowUnselect" update=":classeForm" />
+
+                        <f:facet name="header">
+                            Liste des classe
+                            <p:commandButton value="nouveau" oncomplete="PF('classenewDialog').show()"/>
+                            <!--                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                                        <p:columnToggler datasource="classedata" trigger="toggler" />-->
+                        </f:facet>
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Identité de la classe"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idclasse}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Description de la classe"/>
+                            </f:facet>
+                            <h:outputText value="#{item.descriptionclasse}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="niveaux"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idniveaux.libelleniveaux}"/>
+                        </p:column>
+                        <f:facet name="footer">
+                            <c:if test="#{classeBean.selectedClasse.idclasse!=null}">
+                                <p:commandButton value="supprimer" actionListener="#{classeBean.delete()}" icon="ui-icon-close" update=":classeForm">
+                                    <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                                <p:commandButton immediate="#{classeBean.setModifierToTrue()}" value="Modifier" update="@widgetVar(classeupdateDialog),:classeupdate"  oncomplete="PF('classeupdateDialog').show()" />
+
+                                <p:commandButton immediate="#{classeBean.setModifierToFalse()}" value="Détail" update="@widgetVar(classeupdateDialog),:classeupdate"  oncomplete="PF('classeupdateDialog').show()" icon="ui-icon-search"/>
+
+                            </c:if>
+                        </f:facet>
+
+                    </p:dataTable>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>  
+    </h:body>
+</html>

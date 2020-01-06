@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"  
+                xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" 
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <h:form>
+        <p:panelMenu>
+            <p:submenu label="Classe">
+                <p:menuitem value="Gestion des classes" url="/ecole/pages/classe.xhtml"/>
+                <p:menuitem value="Gestion des niveaux" url="/ecole/pages/niveau.xhtml"/>
+            </p:submenu>
+            <p:submenu label="Elèves">
+                <p:menuitem value="Inscriptions" url="/ecole/pages/eleve.xhtml"/>
+                <p:menuitem value="Parents d'élève" url="/ecole/pages/parent.xhtml"/>
+            </p:submenu>
+            <p:submenu label="Matières">
+                <p:menuitem value="Liste des matières" url="/ecole/pages/matiere.xhtml"/>
+            </p:submenu>
+             <p:submenu label="Salle">
+                <p:menuitem value="Liste des salles" url="/ecole/pages/salle.xhtml"/>
+            </p:submenu>
+            <p:submenu label="Enseignant">
+                <p:menuitem value="Liste des enseignants" url="/ecole/pages/enseignant.xhtml"/>
+            </p:submenu>
+            <p:submenu label="Emploi du temps">
+            </p:submenu>
+            <p:submenu label="Absences">
+            </p:submenu>
+            <p:submenu label="Administration" >
+            </p:submenu>
+            <p:submenu label="Test" >
+            </p:submenu>
+
+        </p:panelMenu>
+    </h:form>
+</ui:composition>

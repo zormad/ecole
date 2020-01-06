@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog appendTo="@(body)" header="Création de nationalité" widgetVar="nationalitenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libelle:" for="libelle" />
+                <p:inputText id="libelle" value="#{eleveBean.nationalite.libelle}" title="Libelle" required="true" requiredMessage="The Libelle field is required."/>
+                <p:outputLabel value="Pays:" for="pays" />
+                <p:inputText id="pays" value="#{eleveBean.nationalite.pays}" title="pays" required="true" requiredMessage="Inserer un pays"/>
+
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{eleveBean.createNationalite()}" update=":nationaliteForm,@widgetVar(nationalitenewDialog),@widgetVar(elevenewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(nationalitenewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header="Tableau de nationalité" widgetVar="nationaliteTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+
+        <h:form id="nationaliteForm">
+            <p:dataTable value="#{eleveBean.nationalites}" var="item" id="nationalitedata"
+                         rows="5" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="nationaliteTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune nationalité trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{eleveBean.updateNationalite}"/>
+                <p:ajax event="rowEditCancel" listener="#{eleveBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des nationalités
+
+                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="nationalitedata" trigger="toggler" />
+                </f:facet>
+                <p:column sortBy="#{item.libelle}" filterBy="#{item.libelle}">
+                    <f:facet name="header">
+                        <h:outputText value="Nationalité"/>
+                    </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{item.libelle}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{item.libelle}"/>
+                        </f:facet>
+                    </p:cellEditor>
+
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Pays"/>
+                    </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{item.pays}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{item.pays}"/>
+                        </f:facet>
+                    </p:cellEditor>
+
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{eleveBean.deleteNationalite(item)}" icon="ui-icon-close" update=":nationaliteForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('nationalitenewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(nationaliteTableDialog)"/>
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </p:dialog>    
+</ui:composition>

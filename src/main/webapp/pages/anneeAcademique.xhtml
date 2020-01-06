@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <!--<title>admin home page</title>-->
+
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Année academique</ui:define>
+            <ui:define name="content">
+                <p:dialog appendTo="@(body)" header="Année academique" widgetVar="anneeAcademiquenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="année academique:" for="anneeAcademique" />
+                            <p:inputText id="anneeAcademique" value="#{anneeAcademiqueBean.anneeAcademique.anneeacademique}" title="année academique" />
+                           <p:outputLabel value="libellé année academique:" for="libelleeannee" />
+                           <p:inputText id="libelleeannee" value="#{anneeAcademiqueBean.anneeAcademique.libelleannee}" title="libellé de l'annee" />
+                            
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{anneeAcademiqueBean.create()}" update=":formAnnee,@widgetVar(anneeAcademiquenewDialog)" icon="ui-icon-star"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <h:form id="formAnnee">
+                    <p:dataTable value="#{anneeAcademiqueBean.liste}" var="item" id="anneeAcademiquedata"
+                                 rows="10" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                                 emptyMessage="Aucune année trouvée avec ces critères" scrollable="true">
+                        <p:ajax event="rowEdit" listener="#{anneeAcademiqueBean.update}" />
+                        <p:ajax event="rowEditCancel" listener="#{anneeAcademiqueBean.cancelled()}" />
+                        <f:facet name="header">
+                            Liste des anneeAcademique
+
+                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="anneeAcademiquedata" trigger="toggler" />
+                        </f:facet>
+                        <p:column sortBy="#{item.anneeacademique}" >
+                            <f:facet name="header">
+                                <h:outputText value="année academique"/>
+                            </f:facet>
+                            <h:outputText value="#{item.anneeacademique}" />
+                    </p:column>
+                    <p:column sortBy="#{item.libelleannee}" >
+                        <f:facet name="header">
+                            <h:outputText value="libellé année academique"/>
+                        </f:facet>
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{item.libelleannee}" /></f:facet>
+                            <f:facet name="input">
+                                <h:inputText value="#{item.libelleannee}" />
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column style="width:32px">
+                        <p:rowEditor />
+                    </p:column>
+                    <p:column style="width:32px;text-align: center">
+                        <p:commandButton actionListener="#{anneeAcademiqueBean.delete(item)}" icon="ui-icon-close" update="formAnnee" >
+                            <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="nouveau" oncomplete="PF('anneeAcademiquenewDialog').show()"/>
+                    </f:facet>
+
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>  
+</h:body>
+</html>

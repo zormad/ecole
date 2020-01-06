@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog appendTo="@(body)" header="création de situationFamilliale" widgetVar="situationFamillialenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:panelGrid columns="2">
+                    <p:outputLabel value="Libellefamillial:" for="libellefamillial" />
+                    <p:inputText id="libellefamillial" value="#{enseignantBean.situationfamilliale.libellefamillial}" title="Libellefamillial" required="true" requiredMessage="The Libellefamillial field is required."/>
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{enseignantBean.createSituationfamilliale()}" update=":situationFamillialeForm,@widgetVar(situationFamillialenewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(situationFamillialenewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)"  widgetVar="situationFamillialeTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="situationFamillialeForm">
+            <p:dataTable value="#{enseignantBean.situationfamilliales}" var="situationFamilliale" id="situationFamillialedata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune situationFamilliale trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{situationFamillialeAccesBean.updateSituationFamillialesRow}" />
+                <p:ajax event="rowEditCancel" listener="#{EleveBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des situationFamilliales
+
+                    <!--                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="situationFamillialedata" trigger="toggler" />-->
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Libellefamillial"/>
+                    </f:facet>
+                    <h:outputText value="#{situationFamilliale.libellefamillial}"/>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor id="situationFamillialeEditor" />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{enseignantBean.deleteSituationfamilliale(situationfamilliale)}" icon="ui-icon-close" update=":situationFamillialeForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('situationFamillialenewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(situationFamillialeTableDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

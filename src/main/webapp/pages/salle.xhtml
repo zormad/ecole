@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Salles de classe</ui:define>
+            <ui:define name="content">
+                <h:form id="barTypeSalle">
+                    <p:commandButton  value="Type de salle" type="button" onclick="PF('typesalleDialog').show();"/>
+                </h:form>
+                <ui:include src="typesalle.xhtml"/>
+                <p:dialog appendTo="@(body)" header="Nouvelle salle" widgetVar="sallenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="type de la salle:" for="idtype" />
+                            <p:selectOneMenu id="idtype" value="#{salleBean.typesalle.idtypesalle}" required="true" requiredMessage="Renseignez le type de la salle">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{salleBean.typesalles}" var="type" itemValue="#{type.idtypesalle}" itemLabel="#{type.libelletypesalle}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="libellé de la salle:" for="nomsalle" />
+                            <p:inputText id="nomsalle" value="#{salleBean.salle.libellesalle}" title="libellé de la salle" />
+                            <p:outputLabel value="Capacité:" for="capacite" />
+                            <p:inputText  id="capacite" value="#{salleBean.salle.capacite}" title="capacité de la salle" />
+
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{salleBean.create()}" update=":salleForm,@widgetVar(sallenewDialog)" icon="ui-icon-star"/>
+                                <p:commandButton value="Annuler" update="@widgetVar(sallenewDialog)"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog> 
+                <p:dialog appendTo="@(body)" header="Modification de la salle #{salleBean.selectedSalle.libellesalle}" widgetVar="salleupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="salleupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <c:if test="#{salleBean.selectedSalle.idsalle!=null}">
+                                <p:outputLabel value="type de la salle:" for="idtypeU" />
+                                <p:selectOneMenu disabled="#{!salleBean.modifier}" id="idtypeU" value="#{salleBean.selectedSalle.idtypesalle.idtypesalle}" required="true" requiredMessage="Renseignez le type de la salle">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{salleBean.typesalles}" var="type" itemValue="#{type.idtypesalle}" itemLabel="#{type.libelletypesalle}"/>
+                                </p:selectOneMenu>
+                            </c:if>
+                            <p:outputLabel value="libellé de la salle:" for="nomsalleU" />
+                            <p:inputText disabled="#{!salleBean.modifier}" id="nomsalleU" value="#{salleBean.selectedSalle.libellesalle}" title="libellé de la salle" />
+                            <p:outputLabel value="Capacité:" for="capaciteU" />
+                            <p:inputText disabled="#{!salleBean.modifier}" id="capaciteU" value="#{salleBean.selectedSalle.capacite}" title="capacité de la salle" />
+                            <f:facet name="footer">
+                                <c:if test="#{salleBean.modifier}">
+                                    <p:commandButton value="Modifier" action="#{salleBean.update()}" update=":salleForm,:salleupdate,@widgetVar(salleupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(salleupdateDialog)"/>
+                                </c:if>
+                                <c:if test="#{!salleBean.modifier}">
+                                    <p:commandButton action="#{salleBean.setModifierToTrue()}" value="Modifier"  update=":salleupdate,salleForm" icon="ui-icon-star"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(salleupdateDialog)"/>
+
+                                </c:if>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <h:form id="salleForm">
+                    <p:dataTable value="#{salleBean.liste}" var="item" id="salledata" selectionMode="single" selection="#{salleBean.selectedSalle}" rowKey="#{item.idsalle}"
+                                 rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" style="margin-bottom:20px"
+                                 emptyMessage="Aucune salle n'est trouvée avec ces critères" scrollable="true">
+                        <p:ajax event="rowSelect" update=":salleForm"/>
+                        <p:ajax event="rowUnselect" update=":salleForm" />
+
+                        <!--                        <p:ajax event="rowSelect" />
+                                                <p:ajax event="rowUnselect" />-->
+
+                        <f:facet name="header">
+                            Liste des salles
+                            <p:commandButton value="nouveau" oncomplete="PF('sallenewDialog').show()"/>
+
+                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="salledata" trigger="toggler" />
+                        </f:facet> 
+                        <p:column sortBy="#{item.idsalle}">
+                            <f:facet name="header">
+                                <h:outputText value="Idsalle"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idsalle}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="type de la salle"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idtypesalle.libelletypesalle}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Libellesalle"/>
+                            </f:facet>
+                            <h:outputText value="#{item.libellesalle}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Capacite"/>
+                            </f:facet>
+                            <h:outputText value="#{item.capacite}"/>
+                        </p:column>
+                        <f:facet name="footer">
+
+                            <c:if test="#{salleBean.selectedSalle.idsalle!=null}">
+                                <p:commandButton  value="Modifier" immediate="#{salleBean.setModifierToTrue()}"  oncomplete="PF('salleupdateDialog').show();" update="@widgetVar(salleupdateDialog),:salleupdate" />
+                                <p:commandButton actionListener="#{salleBean.delete()}" value="Supprimer" icon="ui-icon-close" update=":salleForm">
+                                    <p:confirm header="Confirmation" message="Etes vous sur de supprimer la salle #{item.libellesalle}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                                <p:commandButton immediate="#{salleBean.setModifierToFalse()}" update=":salleupdate" value="Détail"  oncomplete="PF('salleupdateDialog').show();" icon="ui-icon-search" />
+
+                            </c:if>
+                        </f:facet>
+
+                    </p:dataTable>
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

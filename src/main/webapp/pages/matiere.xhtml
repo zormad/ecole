@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Matières de l'année academique #{anneeAcademiqueBean.anneeCourante.anneeacademique}</ui:define>
+            <ui:define name="content">
+                <h:form id="barTypeMatiere">
+                    <p:commandButton  value="Type de matière" type="button" onclick="PF('typematiereDialog').show();"/>
+                </h:form>
+                <ui:include src="typematiere.xhtml"/>
+                <p:dialog appendTo="@(body)" header="Nouvelle matière" widgetVar="matierenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="type de la matière:" for="idtype" />
+                            <p:selectOneMenu id="idtype" value="#{matieresBean.typematiere.idtype}" required="true" requiredMessage="Renseignez type de la matière">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{matieresBean.typeMatieres}" var="type" itemValue="#{type.idtype}" itemLabel="#{type.lielletype}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Classe" for="idniveaux" />
+                            <p:selectOneMenu id="idniveaux" value="#{matieresBean.niveaux.idniveaux}" required="true" requiredMessage="Renseignez la classe">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{niveauxBean.liste}" var="niveau" itemLabel="#{niveau.libelleniveaux}" itemValue="#{niveau.idniveaux}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="libellé de la matiere:" for="nommatiere" />
+                            <p:inputText id="nommatiere" value="#{matieresBean.matiere.nommatiere}" title="libellé de la matiere" />
+                            <p:outputLabel value="Coefficient:" for="coefficient" />
+                            <p:inputText id="coefficient" value="#{matieresBean.matiere.coefficient}" title="Coefficient" maxlength="1" required="true" />
+
+
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{matieresBean.create()}" update=":matiereForm,@widgetVar(matierenewDialog)" icon="ui-icon-star"/>
+                                <p:commandButton value="Annuler" update="@widgetVar(parentnewDialog)"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog> 
+                <p:dialog appendTo="@(body)" header="Modification de la matière #{matieresBean.selectedMatiere.nommatiere}" widgetVar="matiereupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="matiereupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <c:if test="#{matieresBean.selectedMatiere.idmatiere!=null}">
+                                <p:outputLabel value="type de la matière:" for="idtypeU" />
+                                <p:selectOneMenu disabled="#{!matieresBean.modifier}" id="idtypeU" value="#{matieresBean.selectedMatiere.idtype.idtype}" required="true" requiredMessage="Renseignez type de la matière">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{matieresBean.typeMatieres}" var="type" itemLabel="#{type.lielletype}"  itemValue="#{type.idtype}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Classe" for="idniveauxU" />
+                                <p:selectOneMenu disabled="#{!matieresBean.modifier}" id="idniveauxU" value="#{matieresBean.selectedMatiere.idniveaux.idniveaux}" required="true" requiredMessage="Renseignez la classe">
+                                    <!-- TODO: update below reference to list of available items-->
+                                    <f:selectItems value="#{niveauxBean.liste}" var="niveau" itemLabel="#{niveau.libelleniveaux}" itemValue="#{niveau.idniveaux}"/>
+                                </p:selectOneMenu>
+                            </c:if>
+                            <p:outputLabel value="libellé de la matiere:" for="nommatiereU" />
+                            <p:inputText disabled="#{!matieresBean.modifier}" id="nommatiereU" value="#{matieresBean.selectedMatiere.nommatiere}" title="libellé de la matiere" />
+                            <p:outputLabel value="Coefficient:" for="coefficientU" />
+                            <p:inputText disabled="#{!matieresBean.modifier}" id="coefficientU" value="#{matieresBean.selectedMatiere.coefficient}" title="Coefficient" maxlength="1" required="true" />
+
+
+                            <f:facet name="footer">
+                                <c:if test="#{matieresBean.modifier}">
+                                    <p:commandButton value="Modifier" action="#{matieresBean.update()}" update=":matiereForm,:matiereupdate,@widgetVar(matiereupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(matiereupdateDialog)"/>
+                                </c:if>
+                                <c:if test="#{!matieresBean.modifier}">
+                                    <p:commandButton action="#{matieresBean.setModifierToTrue()}" value="Modifier"  update=":matiereupdate" icon="ui-icon-star"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(matiereupdateDialog)"/>
+
+                                </c:if>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <h:form id="matiereForm">
+                    <p:dataTable value="#{matieresBean.liste}" var="item" id="matieredata" selectionMode="single" selection="#{matieresBean.selectedMatiere}" rowKey="#{item.idmatiere}"
+                                 rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" style="margin-bottom:20px"
+                                 emptyMessage="Aucune matière n'est trouvée avec ces critères" scrollable="true">
+                        <p:ajax event="rowSelect" update=":matiereForm"/>
+                        <p:ajax event="rowUnselect" update=":matiereForm" />
+
+                        <!--                        <p:ajax event="rowSelect" />
+                                                <p:ajax event="rowUnselect" />-->
+
+                        <f:facet name="header">
+                            Liste des matières
+                            <p:commandButton value="nouveau" oncomplete="PF('matierenewDialog').show()"/>
+
+                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="matieredata" trigger="toggler" />
+                        </f:facet> 
+                        <p:column sortBy="#{item.idmatiere}">
+                            <f:facet name="header">
+                                <h:outputText value="code de la matiere"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idmatiere}"/>
+                        </p:column>
+                        <p:column sortBy="#{item.nommatiere}" filterBy="#{item.nommatiere}">
+                            <f:facet name="header">
+                                <h:outputText value="Nom de la matiere"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nommatiere}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Coefficient"/>
+                            </f:facet>
+                            <h:outputText value="#{item.coefficient}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="niveau"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idniveaux.libelleniveaux}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="type de la matière"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idtype.lielletype}"/>
+                        </p:column>
+                        <f:facet name="footer">
+
+                            <c:if test="#{matieresBean.selectedMatiere.idmatiere!=null}">
+                                <p:commandButton  value="Modifier" immediate="#{matieresBean.setModifierToTrue()}"  oncomplete="PF('matiereupdateDialog').show();" update="@widgetVar(matiereupdateDialog),:matiereupdate" />
+                                <p:commandButton actionListener="#{matieresBean.delete()}" value="Supprimer" icon="ui-icon-close" update=":matiereForm">
+                                    <p:confirm header="Confirmation" message="Etes vous sur de supprimer la matière #{item.nommatiere}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                                <p:commandButton immediate="#{matieresBean.setModifierToFalse()}" update=":matiereupdate" value="Détail"  oncomplete="PF('matiereupdateDialog').show();" icon="ui-icon-search" />
+
+                            </c:if>
+                        </f:facet>
+
+                    </p:dataTable>
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog appendTo="@(body)" header="création de diplome" widgetVar="diplomenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Intitule:" for="intitule" />
+                <p:inputText id="intitule" value="#{enseignantBean.diplome.intitule}" title="Intitule" />
+                <p:outputLabel value="Ecole:" for="ecole" />
+                <p:inputText id="ecole" value="#{enseignantBean.diplome.ecole}" title="Ecole" />
+                <p:outputLabel value="Specialite:" for="specialite" />
+                <p:inputText id="specialite" value="#{enseignantBean.diplome.specialite}" title="Specialite" />
+                <p:outputLabel value="Niveau:" for="niveau" />
+                <p:inputText id="niveau" value="#{enseignantBean.diplome.niveau}" title="Niveau" />
+                <p:outputLabel value="Dateobtention:" for="dateobtention" />
+                <p:inputText id="dateobtention" value="#{enseignantBean.diplome.dateobtention}" title="Dateobtention" >
+                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                </p:inputText>
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{enseignantBean.createDiplomes()}" update=":diplomeForm,@widgetVar(diplomenewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(diplomenewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)"  widgetVar="diplomeTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="diplomeForm">
+            <p:dataTable value="#{enseignantBean.listeDiplomes}" var="diplome" id="diplomedata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune diplome trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{diplomeAccesBean.updateDiplomesRow}" />
+                <p:ajax event="rowEditCancel" listener="#{EleveBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des diplomes
+
+                    <!--                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="diplomedata" trigger="toggler" />-->
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Iddiplome"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.iddiplome}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Intitule"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.intitule}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Ecole"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.ecole}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Specialite"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.specialite}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Niveau"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.niveau}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Dateobtention"/>
+                    </f:facet>
+                    <h:outputText value="#{diplome.dateobtention}">
+                        <f:convertDateTime pattern="MM/dd/yyyy" />
+                    </h:outputText>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor id="diplomeEditor" />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton update=":diplomeupdate" immediate="#{enseignantBean.setModifierDiplomeToFalse()}"  oncomplete="PF('diplomeupdateDialog').show()" icon="ui-icon-search" title="View">
+                        <f:setPropertyActionListener value="#{diplome}" target="#{enseignantBean.selectedDiplome}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{enseignantBean.deleteDiplomes(diplome)}" icon="ui-icon-close" update=":diplomeForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('diplomenewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(diplomeTableDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header=" Diplomes:#{enseignantBean.selectedDiplome.iddiplome}" widgetVar="diplomeupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="diplomeupdate">
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                 <p:outputLabel value="Iddiplome:" />
+                <p:inputText  value="#{enseignantBean.diplome.iddiplome}" title="Iddiplome" required="true" requiredMessage="The Iddiplome field is required."/>
+                <p:outputLabel value="Intitule:"  />
+                <p:inputText value="#{enseignantBean.diplome.intitule}" title="Intitule" />
+                <p:outputLabel value="Ecole:"  />
+                <p:inputText  value="#{enseignantBean.diplome.ecole}" title="Ecole" />
+                <p:outputLabel value="Specialite:" />
+                <p:inputText value="#{enseignantBean.diplome.specialite}" title="Specialite" />
+                <p:outputLabel value="Niveau:"  />
+                <p:inputText value="#{enseignantBean.diplome.niveau}" title="Niveau" />
+                <p:outputLabel value="Dateobtention:" />
+                <p:inputText  value="#{enseignantBean.diplome.dateobtention}" title="Dateobtention" >
+                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                </p:inputText>
+                 <f:facet name="footer">
+                    <c:if test="#{enseignantBean.modifierDiplome}">
+                        <p:commandButton value="Modifier" action="#{enseignantBean.updateDiplomes}" update=":diplomeForm,@widgetVar(diplomeupdateDialog)" icon="ui-icon-star"/>
+                        <p:commandButton value="Annuler" update="@widgetVar(diplomeupdateDialog)" icon="ui-icon-star"/>
+                    </c:if>
+                    <c:if test="#{!enseignantBean.modifierDiplome}">
+                        <p:commandButton value="Modifier" action="#{enseignantBean.setModifierDiplomeToTrue()}" update=":diplomeForm,:diplomeupdate"/>
+                        <p:commandButton value="Fermer" update="@widgetVar(diplomeupdateDialog)"/>
+                    </c:if>    
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

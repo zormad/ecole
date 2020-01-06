@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Enseignants de l'établissement</ui:define>
+            <ui:define name="content">
+                <h:form id="barEnseignant">
+                    <p:commandButton  value="Status" update=":statusForm" type="button" onclick="PF('statusTableDialog').show();"/>
+                    <p:commandButton  value="Ville" update=":villeForm" type="button" onclick="PF('villeTableDialog').show();"/>
+                    <p:commandButton  value="anneeAcademique" action="anneeAcademique.xhtml"/>
+                    <p:commandButton  value="salaire" update=":salaireForm" type="button" onclick="PF('salaireTableDialog').show();"/>
+                    <p:commandButton  value="diplome" update=":diplomeForm" type="button" onclick="PF('diplomeTableDialog').show();"/>
+                    <p:commandButton  value="situationFamilliale" update=":situationFamillialeForm" type="button" onclick="PF('situationFamillialeTableDialog').show();"/>
+                </h:form>
+                <ui:include src="ville.xhtml"/>
+                <ui:include src="salaire.xhtml"/>
+                <ui:include src="diplome.xhtml"/>
+                <ui:include src="status.xhtml"/>
+                <ui:include src="situationFamilliale.xhtml"/>
+
+                <!--<ui:include src="typesalle.xhtml"/>-->
+                <p:dialog appendTo="@(body)" header="Nouveau Enseignant" widgetVar="enseignantnewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Matricule de l'enseignant:" for="matriculeenseignant" />
+                            <p:inputText id="matriculeenseignant" value="#{enseignantBean.enseignant.matriculeenseignant}" title="Matriculeenseignant" required="true" requiredMessage="The Matriculeenseignant field is required."/>
+                            <p:outputLabel value="Nom:" for="nom" />
+                            <p:inputText id="nom" value="#{enseignantBean.enseignant.nom}" title="Nom" />
+                            <p:outputLabel value="Prenom:" for="prenom" />
+                            <p:inputText id="prenom" value="#{enseignantBean.enseignant.prenom}" title="Prenom" />
+                            <p:outputLabel value="Datenaissance:" for="datenaissance" />
+                            <p:calendar id="datenaissance" value="#{enseignantBean.enseignant.datenaissance}" navigator="true" pattern="MM/dd/yyyy" mask="true" title="date de naissance" >
+                                <f:convertDateTime pattern="MM/dd/yyyy"/>
+                            </p:calendar>
+                            <p:outputLabel value="Lieu de naissance:" for="lieunaissance" />
+                            <p:inputText id="lieunaissance" value="#{enseignantBean.enseignant.lieunaissance}" title="Lieunaissance" />
+                            <p:outputLabel value="Sexe:" for="sexe" />
+                            <p:selectOneMenu value="#{enseignantBean.enseignant.sexe}" title="sexe" id="sexe">
+                                <f:selectItem itemValue="Homme" itemLabel="Homme"/>
+                                <f:selectItem itemValue="Femme" itemLabel="Femme"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Email:" for="email" />
+                            <p:inputText id="email" value="#{enseignantBean.enseignant.email}" title="Email" />
+                            <p:outputLabel value="Telephone:" for="telephone" />
+                            <p:inputText id="telephone" value="#{enseignantBean.enseignant.telephone}" title="Telephone" />
+                            <p:outputLabel value="Adresse:" for="adresse" />
+                            <p:inputText id="adresse" value="#{enseignantBean.enseignant.adresse}" title="Adresse" />
+                            <p:outputLabel value="Date de recrutement:" for="daterecrutement" />
+                            <p:calendar id="daterecrutement" value="#{enseignantBean.enseignant.daterecrutement}" navigator="true" pattern="MM/dd/yyyy" mask="true" title="Date de recrutement" >
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </p:calendar>
+                            <p:outputLabel value="Nombre d'experience:" for="nbreexperience" />
+                            <p:inputText id="nbreexperience" value="#{enseignantBean.enseignant.nbreexperience}" title="Nbreexperience" />
+                            <p:outputLabel value="Telephone fixe:" for="telephonefixe" />
+                            <p:inputText id="telephonefixe" value="#{enseignantBean.enseignant.telephonefixe}" title="Telephonefixe" />
+                            <p:outputLabel value="Code postal:" for="codepostal" />
+                            <p:inputText id="codepostal" value="#{enseignantBean.enseignant.codepostal}" title="Codepostal" />
+                            <p:outputLabel value="Nationalité" for="libelle" />
+                            <p:selectOneMenu id="libelle" value="#{enseignantBean.nationalite.libelle}" required="true" requiredMessage="Renseigner la nationalité">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{eleveBean.nationalites}" var="nationalite" itemLabel="#{nationalite.libelle}" itemValue="#{nationalite.libelle}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="situation familliale:" for="libellefamillial" />
+                            <p:selectOneMenu id="libellefamillial" value="#{enseignantBean.situationfamilliale.libellefamillial}" required="true" requiredMessage="Renseigner la situation familliale">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{enseignantBean.situationfamilliales}" var="situation" itemLabel="#{situation.libellefamillial}" itemValue="#{situation.libellefamillial}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="status:" for="libellestatus" />
+                            <p:selectOneMenu id="libellestatus" value="#{enseignantBean.status.libellestatus}" required="true" requiredMessage="Renseigner le statut">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{enseignantBean.listeStatus}" var="statut" itemLabel="#{statut.libellestatus}" itemValue="#{statut.libellestatus}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="ville:" for="idville" />
+                            <p:selectOneMenu id="idville" value="#{enseignantBean.ville.idville}" required="true" requiredMessage="Renseigner la ville">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.villes}" var="ville" itemLabel="#{ville.libelleville}" itemValue="#{ville.idville}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Niveaux:" for="niveau" />
+                            <p:selectOneMenu id="niveau" value="#{enseignantBean.niveauxAcademique.idniveaux}" required="true" requiredMessage="Renseigner le niveau">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{ niveauxBean.liste}" var="niveau" itemLabel="#{niveau.libelleniveaux}" itemValue="#{niveau.idniveaux}" />
+                            </p:selectOneMenu>s
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{enseignantBean.create()}" update=":enseignantForm,@widgetVar(enseignantnewDialog)" icon="ui-icon-star"/>
+                                <p:commandButton value="Annuler" type="button" onclick="PF('enseignantnewDialog').hide();"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog> 
+                <p:dialog appendTo="@(body)" header="Modification de la salle #{salleBean.selectedSalle.libellesalle}" widgetVar="enseignantDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="enseignantupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Matricule de l'enseignant:" for="matriculeenseignantU" />
+                            <p:inputText id="matriculeenseignantU" value="#{enseignantBean.enseignant.matriculeenseignant}" title="Matriculeenseignant" required="true" requiredMessage="The Matriculeenseignant field is required."/>
+                            <p:outputLabel value="Nom:" for="nomU" />
+                            <p:inputText id="nomU" value="#{enseignantBean.enseignant.nom}" title="Nom" />
+                            <p:outputLabel value="Prenom:" for="prenomU" />
+                            <p:inputText id="prenomU" value="#{enseignantBean.enseignant.prenom}" title="Prenom" />
+                            <p:outputLabel value="Datenaissance:" for="datenaissanceU" />
+                            <p:calendar id="datenaissanceU" value="#{enseignantBean.enseignant.datenaissance}" navigator="true" pattern="MM/dd/yyyy" mask="true" title="date de naissance" >
+                                <f:convertDateTime pattern="MM/dd/yyyy"/>
+                            </p:calendar>
+                            <p:outputLabel value="Lieu de naissance:" for="lieunaissanceU" />
+                            <p:inputText id="lieunaissanceU" value="#{enseignantBean.enseignant.lieunaissance}" title="Lieunaissance" />
+                            <p:outputLabel value="Sexe:" for="sexeU" />
+                            <p:selectOneMenu value="#{enseignantBean.enseignant.sexe}" title="sexe" id="sexeU">
+                                <f:selectItem itemValue="Homme" itemLabel="Homme"/>
+                                <f:selectItem itemValue="Femme" itemLabel="Femme"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Email:" for="emailU" />
+                            <p:inputText id="emailU" value="#{enseignantBean.enseignant.email}" title="Email" />
+                            <p:outputLabel value="Telephone:" for="telephoneU" />
+                            <p:inputText id="telephoneU" value="#{enseignantBean.enseignant.telephone}" title="Telephone" />
+                            <p:outputLabel value="Adresse:" for="adresseU" />
+                            <p:inputText id="adresseU" value="#{enseignantBean.enseignant.adresse}" title="Adresse" />
+                            <p:outputLabel value="Date de recrutement:" for="daterecrutementU" />
+                            <p:calendar id="daterecrutementU" value="#{enseignantBean.enseignant.daterecrutement}" navigator="true" pattern="MM/dd/yyyy" mask="true" title="Date de recrutement" >
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </p:calendar>
+                            <p:outputLabel value="Nombre d'experience:" for="nbreexperienceU" />
+                            <p:inputText id="nbreexperienceU" value="#{enseignantBean.enseignant.nbreexperience}" title="Nbreexperience" />
+                            <p:outputLabel value="Telephone fixe:" for="telephonefixeU" />
+                            <p:inputText id="telephonefixeU" value="#{enseignantBean.enseignant.telephonefixe}" title="Telephonefixe" />
+                            <p:outputLabel value="Code postal:" for="codepostalU" />
+                            <p:inputText id="codepostalU" value="#{enseignantBean.enseignant.codepostal}" title="Codepostal" />
+                            <p:outputLabel value="Nationalité" for="libelleU" />
+                            <p:selectOneMenu id="libelleU" value="#{enseignantBean.nationalite.libelle}" required="true" requiredMessage="Renseigner la nationalité">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{eleveBean.nationalites}" var="nationalite" itemLabel="#{nationalite.libelle}" itemValue="#{nationalite.libelle}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="situation familliale:" for="libellefamillialU" />
+                            <p:selectOneMenu id="libellefamillialU" value="#{enseignantBean.situationfamilliale.libellefamillial}" required="true" requiredMessage="Renseigner la situation familliale">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{enseignantBean.situationfamilliales}" var="situation" itemLabel="#{situation.libellefamillial}" itemValue="#{situation.libellefamillial}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="status:" for="libellestatusU" />
+                            <p:selectOneMenu id="libellestatusU" value="#{enseignantBean.status.libellestatus}" required="true" requiredMessage="Renseigner le statut">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{enseignantBean.listeStatus}" var="statut" itemLabel="#{statut.libellestatus}" itemValue="#{statut.libellestatus}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="ville:" for="idvilleU" />
+                            <p:selectOneMenu id="idvilleU" value="#{enseignantBean.ville.idville}" required="true" requiredMessage="Renseigner la ville">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.villes}" var="ville" itemLabel="#{ville.libelleville}" itemValue="#{ville.idville}"/>
+                            </p:selectOneMenu>
+
+                            <f:facet name="footer">
+                                <c:if test="#{enseignantBean.modifier}">
+                                    <p:commandButton value="Modifier" action="#{enseignant.update()}" update=":enseignantForm,:enseignantupdate,@widgetVar(enseignantupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(enseignantupdateDialog)"/>
+                                </c:if>
+                                <c:if test="#{!enseignantBean.modifier}">
+                                    <p:commandButton action="#{enseigantBean.setModifierToTrue()}" value="Modifier"  update=":enseignantupdate,enseignantForm" icon="ui-icon-star"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(enseignantupdateDialog)"/>
+
+                                </c:if>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <h:form id="enseignantForm">
+                    <p:dataTable value="#{enseignantBean.liste}" var="item" id="enseignantdata" selectionMode="single" selection="#{enseignantBean.selectedEnseignant}" rowKey="#{item.matriculeenseignant}"
+                                 rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" style="margin-bottom:20px"
+                                 emptyMessage="Aucun enseignant n'est trouvé avec ces critères" scrollable="true">
+                        <p:ajax event="rowSelect" update=":enseignantForm"/>
+                        <p:ajax event="rowUnselect" update=":enseignantForm" />
+
+                        <!--                        <p:ajax event="rowSelect" />
+                                                <p:ajax event="rowUnselect" />-->
+
+                        <f:facet name="header">
+                            Liste des enseignants
+                            <p:commandButton value="nouveau" oncomplete="PF('enseignantnewDialog').show()"/>
+
+                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="enseignantdata" trigger="toggler" />
+                        </f:facet>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Matriculeenseignant"/>
+                            </f:facet>
+                            <h:outputText value="#{item.matriculeenseignant}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nom"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nom}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Prenom"/>
+                            </f:facet>
+                            <h:outputText value="#{item.prenom}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Datenaissance"/>
+                            </f:facet>
+                            <h:outputText value="#{item.datenaissance}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Lieunaissance"/>
+                            </f:facet>
+                            <h:outputText value="#{item.lieunaissance}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Sexe"/>
+                            </f:facet>
+                            <h:outputText value="#{item.sexe}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Email"/>
+                            </f:facet>
+                            <h:outputText value="#{item.email}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Telephone"/>
+                            </f:facet>
+                            <h:outputText value="#{item.telephone}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Adresse"/>
+                            </f:facet>
+                            <h:outputText value="#{item.adresse}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Daterecrutement"/>
+                            </f:facet>
+                            <h:outputText value="#{item.daterecrutement}">
+                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nbreexperience"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nbreexperience}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Telephonefixe"/>
+                            </f:facet>
+                            <h:outputText value="#{item.telephonefixe}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Codepostal"/>
+                            </f:facet>
+                            <h:outputText value="#{item.codepostal}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nationalité"/>
+                            </f:facet>
+                            <h:outputText value="#{item.libelle.libelle}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="niveaux"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idniveaux.libelleniveaux}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="lien famillial"/>
+                            </f:facet>
+                            <h:outputText value="#{item.libellefamillial.libellefamillial}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="status"/>
+                            </f:facet>
+                            <h:outputText value="#{item.libellestatus.libellestatus}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="ville"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idville.libelleville}"/>
+                        </p:column>
+                        <f:facet name="footer">
+
+                            <c:if test="#{enseignantBean.selectedEnseignant.matriculeenseignant!=null}">
+                                <p:commandButton  value="Modifier" immediate="#{salleBean.setModifierToTrue()}"  oncomplete="PF('enseignantupdateDialog').show();" update="@widgetVar(enseignantupdateDialog),:enseignantupdate" />
+                                <p:commandButton actionListener="#{enseignantBean.delete()}" value="Supprimer" icon="ui-icon-close" update=":enseignantForm">
+                                    <p:confirm header="Confirmation" message="Etes vous sur de supprimer l'enseinant #{item.matriculeenseignant}?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                                <p:commandButton immediate="#{enseignantBean.setModifierToFalse()}" update=":enseignanteupdate" value="Détail"  oncomplete="PF('enseignantupdateDialog').show();" icon="ui-icon-search" />
+
+                            </c:if>
+                        </f:facet>
+
+                    </p:dataTable>
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

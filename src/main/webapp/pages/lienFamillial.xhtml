@@ -1,0 +1,98 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog appendTo="@(body)" header="création de lienFamillial" widgetVar="lienFamillialnewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="type de lien famillial:" for="libellelienFamillial" />
+                <p:inputText id="libellelienFamillial" value="#{parentBean.lienFamillial.libelle}" title="lien famillial" />
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{parentBean.createLienFamillial()}" update=":lienFamillialForm,@widgetVar(lienFamillialnewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(lienFamillialnewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)"  widgetVar="lienFamillialTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="lienFamillialForm">
+            <p:dataTable value="#{parentBean.liens}" var="lienFamillial" id="lienFamillialdata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="false" style="margin-bottom:20px"
+                         emptyMessage="Aucune lienFamillial trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{parentAccesBean.updateLienFamillialRow}" />
+                <p:ajax event="rowEditCancel" listener="#{parentBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des lienFamillials
+
+                    <!--                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="lienFamillialdata" trigger="toggler" />-->
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id du lien"/>
+                    </f:facet>
+                    <h:outputText value="#{lienFamillial.idlien}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="type de lien famillial"/>
+                    </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{lienFamillial.libelle}"/></f:facet>
+                        <f:facet name="input"><h:inputText value="#{lienFamillial.libelle}"/></f:facet>
+                    </p:cellEditor>
+                   
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor id="lienFamilleEditor" />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton update=":lienFamillialupdate" immediate="#{parentBean.setModifierLienFamillialToFalse()}"  oncomplete="PF('lienFamillialupdateDialog').show()" icon="ui-icon-search" title="View">
+                        <f:setPropertyActionListener value="#{lienFamillial}" target="#{parentBean.selectedLienFamillial}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{parentBean.deleteLienFamillial(lienFamillial)}" icon="ui-icon-close" update=":lienFamillialForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('lienFamillialnewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(lienFamillialTableDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header=" LienFamillial:#{parentBean.selectedLienFamillial.libelle}" widgetVar="lienFamillialupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="lienFamillialupdate">
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libelle de la lienFamillial" for="libellelienFamillialU" />
+                <p:inputText id="libellelienFamillialU" value="#{parentBean.selectedLienFamillial.libelle}" disabled="#{!parentBean.modifierLienFamillial}" title="Libelle de la lienFamillial" />
+                <f:facet name="footer">
+                    <c:if test="#{parentBean.modifierLienFamillial}">
+                        <p:commandButton value="Modifier" action="#{parentBean.updateLienFamillial()}" update=":lienFamillialForm,@widgetVar(lienFamillialupdateDialog)" icon="ui-icon-star"/>
+                        <p:commandButton value="Annuler" update="@widgetVar(lienFamillialupdateDialog)" icon="ui-icon-star"/>
+                    </c:if>
+                    <c:if test="#{!parentBean.modifierLienFamillial}">
+                        <p:commandButton value="Modifier" action="#{parentBean.setModifierLienFamillialToTrue()}" update=":lienFamillialForm,:lienFamillialupdate"/>
+                        <p:commandButton value="Fermer" update="@widgetVar(lienFamillialupdateDialog)"/>
+                    </c:if>    
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

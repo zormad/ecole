@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <!--<title>admin home page</title>-->
+       
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+             <ui:define name="title">error pages 404</ui:define>
+             <img src="resources/images/logo_agiitech.png" alt=""/>
+             <p:inputText value="la page que vous temtez de visiter est incorrecte ou n'existe pas"/>
+             <p:link value="go to home page" outcome='/pages/index.html'/>
+        </ui:composition>  
+    </h:body>
+</html>

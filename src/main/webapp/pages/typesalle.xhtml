@@ -1,0 +1,76 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <p:dialog appendTo="@(body)" header="Types de matière" widgetVar="typesallenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="libellé du type:" for="libelletype" />
+                <p:inputText id="libelletype" value="#{salleBean.typesalle.libelletypesalle}" title="libellé du type" />
+
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{salleBean.createTypeSalle()}" update=":formTypeSalle,@widgetVar(typesallenewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Annuler" update="@widgetVar(typesallenewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header="Types de matière" widgetVar="typesalleDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="formTypeSalle">
+            <p:dataTable value="#{salleBean.typesalles}" var="item" id="typeSalledata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucun type de matière n'est trouvé repectant ces critères" scrollable="true">
+                <p:ajax event="rowEdit" rendered="formTypeSalle" listener="#{salleBean.updateTypeSalle}" />
+                <p:ajax event="rowEditCancel" listener="#{salleBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des types de matière
+
+                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="typeSalledata" trigger="toggler" />
+                </f:facet>
+                <p:column sortBy="#{item.idtypesalle}" >
+                    <f:facet name="header">
+                        <h:outputText value="code type"/>
+                    </f:facet>
+                    <h:outputText value="#{item.idtypesalle}" />
+                </p:column>
+                <p:column sortBy="#{item.libelletypesalle}" >
+                    <f:facet name="header">
+                        <h:outputText value="libellé du type de la matière"/>
+                    </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.libelletypesalle}" /></f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{item.libelletypesalle}" />
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{salleBean.deleteTypeSalle(item)}" icon="ui-icon-close" update="formTypeSalle" >
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('typesallenewDialog').show()"/>
+                    <p:commandButton value="Annuler" update="@widgetVar(typesalleDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+</ui:composition>  

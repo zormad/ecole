@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog appendTo="@(body)" header="Création d'école" widgetVar="ecolenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Abréviation de l'école" for="abbbecole" />
+                <p:inputText id="abbbecole" value="#{eleveBean.ancienneEcole.abbbecole}" title="Abbbecole" required="true" requiredMessage="The Abbbecole field is required."/>
+                <p:outputLabel value="Nom de l'école:" for="nomecole" />
+                <p:inputText id="nomecole" value="#{eleveBean.ancienneEcole.nomecole}" title="Nomecole" />
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{eleveBean.createAncienneEcole()}" update=":ecoleForm,@widgetVar(ecolenewDialog),@widgetVar(elevenewDialog)" icon="ui-icon-star"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header="Tableau d'école" widgetVar="ecoleTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+
+        <h:form id="ecoleForm">
+            <p:dataTable value="#{eleveBean.anciensEcoles}" var="item" id="ecoledata"
+                         rows="5" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="ecoleTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune {cole trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{eleveBean.updateAncienneEcole}"/>
+                <p:ajax event="rowEditCancel" listener="#{eleveBean.cancelled()}" />
+                <f:facet name="header">
+                    Liste des écoles
+
+                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                    <p:columnToggler datasource="ecoledata" trigger="toggler" />
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Abréviation de l'école"/>
+                    </f:facet>
+                    <h:outputText value="#{item.abbbecole}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Nom de l'école"/>
+                    </f:facet>
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{item.nomecole}"/>
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{item.nomecole}"/>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor />
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{eleveBean.deleteAncienneEcole(item)}" icon="ui-icon-close" update=":ecoleForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('ecolenewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(ecoleTableDialog)"/>
+
+                </f:facet>
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+</ui:composition>

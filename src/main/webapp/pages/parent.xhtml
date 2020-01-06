@@ -1,0 +1,216 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:h="http://xmlns.jcp.org/jsf/html"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <!--<title>admin home page</title>-->
+
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Formulaire des parent d'elève</ui:define>
+            <ui:define name="content">
+                <h:form id="barParent">
+                    <p:commandButton  value="Nouvelle Ville" update=":villeForm" type="button" onclick="PF('villeTableDialog').show();"/>
+                    <p:commandButton  value="Nouvelle profession" update=":professionForm" type="button" onclick="PF('professionTableDialog').show();"/>
+                    <p:commandButton  value="Nouveau lien famillial" update=":lienFamillialForm" type="button" onclick="PF('lienFamillialTableDialog').show();"/>
+                </h:form>
+                <ui:include src="ville.xhtml"/>
+                <ui:include src="profession.xhtml"/>
+                <ui:include src="lienFamillial.xhtml"/>
+
+                <p:dialog appendTo="@(body)" header="Nouveau parent d'eleve" widgetVar="parentnewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Nom:" for="nom" />
+                            <p:inputText id="nom" value="#{parentBean.parent.nom}" title="Nom" />
+                            <p:outputLabel value="Prenom:" for="prenom" />
+                            <p:inputText id="prenom" value="#{parentBean.parent.prenom}" title="Prenom" />
+                            <p:outputLabel value="Adresse:" for="adresse" />
+                            <p:inputText id="adresse" value="#{parentBean.parent.adresse}" title="Adresse" />
+                            <p:outputLabel value="Telephone:" for="telephone" />
+                            <p:inputText id="telephone" value="#{parentBean.parent.telephone}" title="Telephone" />
+                            <p:outputLabel value="TelephoneMobile:" for="telephoneMobile" />
+                            <p:inputText id="telephoneMobile" value="#{parentBean.parent.telephoneMobile}" title="TelephoneMobile" />
+                            <p:outputLabel value="Email:" for="email" />
+                            <p:inputText id="email" value="#{parentBean.parent.email}" title="Email" />
+                            <p:outputLabel value="lien de famille:" for="idlien" />
+                            <p:selectOneMenu id="idlien" value="#{parentBean.lienFamillial.idlien}" required="true" requiredMessage="The Idlien field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.liens}" var="lien" itemLabel="#{lien.libelle}" itemValue="#{lien.idlien}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="profession:" for="idprofession" />
+                            <p:selectOneMenu id="idprofession" value="#{parentBean.profession.idprofession}" required="true" requiredMessage="The Idprofession field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.professions}" var="profession" itemLabel="#{profession.libelleprofession}" itemValue="#{profession.idprofession}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="ville:" for="idville" />
+                            <p:selectOneMenu id="idville" value="#{parentBean.ville.idville}" required="true" requiredMessage="The Idville field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.villes}" var="ville" itemLabel="#{ville.libelleville}" itemValue="#{ville.idville}"/>
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{parentBean.createParent()}" update=":parentForm,@widgetVar(parentnewDialog)" icon="ui-icon-star"/>
+                                <p:commandButton value="Annuler" update="@widgetVar(parentnewDialog)"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog> 
+
+                <p:dialog appendTo="@(body)" header="Modification du parent d'eleve #{parentBean.selectedParent.nom} #{parentBean.selectedParent.prenom}" widgetVar="parentupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="parentupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Idparent:" for="idparentU" />
+                            <p:inputText disabled="true" id="idparentU" value="#{parentBean.selectedParent.idparent}" title="Idparent" required="true" requiredMessage="The Idparent field is required."/>
+                            <p:outputLabel value="Nom:" for="nomU" />
+                            <p:inputText disabled="#{!parentBean.modifier}" id="nomU" value="#{parentBean.selectedParent.nom}" title="Nom" />
+                            <p:outputLabel value="Prenom:" for="prenomU" />
+                            <p:inputText disabled="#{!parentBean.modifier}" id="prenomU" value="#{parentBean.selectedParent.prenom}" title="Prenom" />
+                            <p:outputLabel value="Adresse:" for="adresseU" />
+                            <p:inputText disabled="#{!parentBean.modifier}" id="adresseU" value="#{parentBean.selectedParent.adresse}" title="Adresse" />
+                            <p:outputLabel value="Telephone:" for="telephoneU" />
+                            <p:inputText disabled="#{!parentBean.modifier}" id="telephoneU" value="#{parentBean.selectedParent.telephone}" title="Telephone" />
+                            <p:outputLabel value="TelephoneMobile:" for="telephoneMobileU" />
+                            <p:inputText  disabled="#{!parentBean.modifier}" id="telephoneMobileU" value="#{parentBean.selectedParent.telephoneMobile}" title="TelephoneMobile" />
+                            <p:outputLabel value="Email:" for="emailU" />
+                            <p:inputText disabled="#{!parentBean.modifier}" id="emailU" value="#{parentBean.selectedParent.email}" title="Email" />
+                            <p:outputLabel value="lien de famille:" for="idlienU" />
+                            <p:selectOneMenu disabled="#{!parentBean.modifier}" id="idlienU" value="#{parentBean.lienFamillial.idlien}" required="true" requiredMessage="The Idlien field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.liens}" var="lien" itemLabel="#{lien.libelle}" itemValue="#{lien.idlien}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="profession:" for="idprofessionU" />
+                            <p:selectOneMenu disabled="#{!parentBean.modifier}" id="idprofessionU" value="#{parentBean.profession.idprofession}" required="true" requiredMessage="The Idprofession field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.professions}" var="profession" itemLabel="#{profession.libelleprofession}" itemValue="#{profession.idprofession}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="ville:" for="idvilleU" />
+                            <p:selectOneMenu disabled="#{!parentBean.modifier}" id="idvilleU" value="#{parentBean.ville.idville}" required="true" requiredMessage="The Idville field is required.">
+                                <!-- TODO: update below reference to list of available items-->
+                                <f:selectItems value="#{parentBean.villes}" var="ville" itemLabel="#{ville.libelleville}" itemValue="#{ville.idville}"/>
+                            </p:selectOneMenu>
+                            <f:facet name="footer">
+                                <c:if test="#{parentBean.modifier}">
+                                    <p:commandButton value="Modifier" action="#{parentBean.updateParent}" update=":parentForm,:parentupdate,@widgetVar(parentupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(parentupdateDialog)"/>
+                                </c:if>
+                                <c:if test="#{!parentBean.modifier}">
+                                    <p:commandButton action="#{parentBean.setModifierToTrue()}" value="Modifier"  update=":parentupdate" icon="ui-icon-star"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(parentupdateDialog)"/>
+
+                                </c:if>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                
+                <h:form id="parentForm">
+                    <p:dataTable value="#{parentBean.parents}" var="item" id="parentdata" selectionMode="single" selection="#{parentBean.selectedParent}" rowKey="#{item.idparent}"
+                                 rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" style="margin-bottom:20px"
+                                 emptyMessage="Aucun selectedParent trouvé avec ces critères" scrollable="true">
+                        <p:ajax event="rowSelect" update=":parentForm"/>
+                        <p:ajax event="rowUnselect" update=":parentForm" />
+
+                        <p:ajax event="rowSelect" />
+                        <p:ajax event="rowUnselect" />
+
+                        <f:facet name="header">
+                            Liste des parents
+                            <p:commandButton value="nouveau" oncomplete="PF('parentnewDialog').show()"/>
+
+                            <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                            <p:columnToggler datasource="parentdata" trigger="toggler" />
+                        </f:facet> 
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Idparent"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idparent}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Nom"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nom}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Prenom"/>
+                            </f:facet>
+                            <h:outputText value="#{item.prenom}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Adresse"/>
+                            </f:facet>
+                            <h:outputText value="#{item.adresse}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Telephone"/>
+                            </f:facet>
+                            <h:outputText value="#{item.telephone}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="TelephoneMobile"/>
+                            </f:facet>
+                            <h:outputText value="#{item.telephoneMobile}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Email"/>
+                            </f:facet>
+                            <h:outputText value="#{item.email}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Idlien"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idlien.libelle}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Idprofession"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idprofession.libelleprofession}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Idville"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idville.libelleville}"/>
+                        </p:column>
+                        <f:facet name="footer">
+
+                            <c:if test="#{parentBean.selectedParent.idparent!=null}">
+                                <p:commandButton  value="Modifier" immediate="#{parentBean.setModifierToTrue()}"  oncomplete="PF('parentupdateDialog').show();" update="@widgetVar(parentupdateDialog),:parentupdate" />
+                                <p:commandButton actionListener="#{parentBean.deleteParent}" value="Supprimer" icon="ui-icon-close" update=":parentForm">
+                                    <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                </p:confirmDialog>
+                                <p:commandButton immediate="#{parentBean.setModifierToFalse()}" update=":parentupdate" value="Détail"  oncomplete="PF('parentupdateDialog').show();" icon="ui-icon-search" />
+
+                            </c:if>
+                        </f:facet>
+
+                    </p:dataTable>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>  
+    </h:body>
+</html>

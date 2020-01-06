@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog appendTo="@(body)" header="création de profession" widgetVar="professionnewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form>
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libelleprofession:" for="libelleprofession" />
+                <p:inputText id="libelleprofession" value="#{parentBean.profession.libelleprofession}" title="Libelleprofession" />
+                <f:facet name="footer">
+                    <p:commandButton value="ENREGISTRER" action="#{parentBean.createProfession()}" update=":professionForm,@widgetVar(professionnewDialog)" icon="ui-icon-star"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(professionnewDialog)"/>
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)"  widgetVar="professionTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="professionForm">
+            <p:dataTable value="#{parentBean.professions}" var="profession" id="professiondata"
+                         rows="10" paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" widgetVar="userTab" editable="true" style="margin-bottom:20px"
+                         emptyMessage="Aucune profession trouvée avec ces critères" scrollable="true">
+                <p:ajax event="rowEdit" listener="#{parentAccesBean.updateProfessionRow}" />
+                <!--<p:ajax event="rowEditCancel" listener="#{parentBean.cancelled()}" />-->
+                <f:facet name="header">
+                    Liste des professions
+
+                    <!--                    <p:commandButton id="toggler" type="button" value="Columns" style="float:right" icon="ui-icon-calculator" />
+                                        <p:columnToggler datasource="professiondata" trigger="toggler" />-->
+                </f:facet>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Idprofession"/>
+                    </f:facet>
+                    <h:outputText value="#{profession.idprofession}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">
+                        <h:outputText value="Libelleprofession"/>
+                    </f:facet>
+                    <h:outputText value="#{profession.libelleprofession}"/>
+                    <!--                    <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="{profession.libelleprofession}"/></f:facet>
+                                            <f:facet name="input"><h:inputText value="{profession.libelleprofession}"/></f:facet>
+                                        </p:cellEditor>-->
+
+                </p:column>
+                <p:column style="width:32px">
+                    <p:rowEditor id="professionEditor"/>
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton update=":professionupdate" immediate="#{parentBean.setModifierProfessionToFalse()}"  oncomplete="PF('professionupdateDialog').show()" icon="ui-icon-search" title="View">
+                        <f:setPropertyActionListener value="#{profession}" target="#{parentBean.selectedProfession}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column style="width:32px;text-align: center">
+                    <p:commandButton actionListener="#{parentBean.deleteProfession(profession)}" icon="ui-icon-close" update=":professionForm">
+                        <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="nouveau" oncomplete="PF('professionnewDialog').show()"/>
+                    <p:commandButton value="Fermer" update="@widgetVar(professionTableDialog)"/>
+                </f:facet>
+
+            </p:dataTable>
+        </h:form>
+    </p:dialog>
+    <p:dialog appendTo="@(body)" header=" Profession:#{parentBean.selectedProfession.libelleprofession}" widgetVar="professionupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+        <h:form id="professionupdate">
+            <p:growl><p:autoUpdate/></p:growl>
+            <p:panelGrid columns="2">
+                <p:outputLabel value="Libelle de la profession" for="libelleprofessionU" />
+                <p:inputText id="libelleprofessionU" value="#{parentBean.selectedProfession.libelleprofession}" disabled="#{!parentBean.modifierProfession}" title="Libelle de la profession" />
+                <f:facet name="footer">
+                    <c:if test="#{parentBean.modifierProfession}">
+                        <p:commandButton value="Modifier" action="#{parentBean.updateProfession()}" update=":professionForm,@widgetVar(professionupdateDialog)" icon="ui-icon-star"/>
+                        <p:commandButton value="Annuler" update="@widgetVar(professionupdateDialog)" icon="ui-icon-star"/>
+                    </c:if>
+                    <c:if test="#{!parentBean.modifierProfession}">
+                        <p:commandButton value="Modifier" action="#{parentBean.setModifierProfessionToTrue()}" update=":professionForm,:professionupdate"/>
+                        <p:commandButton value="Fermer" update="@widgetVar(professionupdateDialog)"/>
+                    </c:if>    
+                </f:facet>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

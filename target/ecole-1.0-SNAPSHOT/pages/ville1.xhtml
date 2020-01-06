@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:h="http://xmlns.jcp.org/jsf/html"
+       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+       xmlns:f="http://xmlns.jcp.org/jsf/core"
+       xmlns:p="http://primefaces.org/ui"
+       xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <!--<title>admin home page</title>-->
+
+    </h:head>
+    <h:body>
+        <ui:composition template="../WEB-INF/template.xhtml">
+            <ui:define name="title">Formulaire de ville</ui:define>
+            <ui:define name="content">
+
+                <p:dialog appendTo="@(body)" header="création de ville" widgetVar="villenewDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form>
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Libelleville:" for="libelleville" />
+                            <p:inputText id="libelleville" value="#{parentBean.ville.libelleville}" title="Libelleville" />
+                            <f:facet name="footer">
+                                <p:commandButton value="ENREGISTRER" action="#{parentBean.createVille()}" update=":villeForm,@widgetVar(villenewDialog)" icon="ui-icon-star"/>
+                                <p:commandButton value="Fermer" update="@widgetVar(villenewDialog)"/>
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+                <!--<p:dialog appendTo="@(body)"  widgetVar="villeTableDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">-->
+                <h:form id="villeForm">
+                    <p:dataTable value="#{parentBean.villes}" var="item"  rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rowsPerPageTemplate="5,10,15" widgetVar="villeTab" editable="true" style="margin-bottom:20px"
+                                 emptyMessage="Aucune ville trouvée avec ces critères" scrollable="true">
+                        <p:ajax event="rowEdit" listener="#{eleveBean.updateVille}"/>
+                        <p:ajax event="rowEditCancel" listener="#{parentBean.cancelled()}" />
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Idville"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idville}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="Libelleville"/>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{item.libelleville}"/></f:facet>
+                                <f:facet name="input"><h:inputText value="#{item.libelleville}"/></f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+                        <p:column style="width:32px">
+                            <p:rowEditor />
+                        </p:column>
+                        <p:column style="width:32px;text-align: center">
+                            <p:commandButton update=":villeupdate" immediate="#{parentBean.setModifierVilleToFalse()}"  oncomplete="PF('villeupdateDialog').show()" icon="ui-icon-search" title="View">
+                                <f:setPropertyActionListener value="#{item}" target="#{parentBean.selectedVille}" />
+                            </p:commandButton>
+                        </p:column>
+                        <p:column style="width:32px;text-align: center">
+                            <p:commandButton actionListener="#{parentBean.deleteVille(item)}" icon="ui-icon-close" update=":villeForm">
+                                <p:confirm header="Confirmation" message="Etes vous sur?" icon="ui-icon-alert" />
+                            </p:commandButton>
+
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                            </p:confirmDialog>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="nouveau" oncomplete="PF('villenewDialog').show()"/>
+                            <p:commandButton value="Fermer" update="@widgetVar(villeTableDialog)"/>
+                        </f:facet>
+
+                    </p:dataTable>
+                </h:form>
+                <!--</p:dialog>-->
+                <p:dialog appendTo="@(body)" header=" Ville:#{parentBean.selectedVille.libelleville}" widgetVar="villeupdateDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="villeupdate">
+                        <p:growl><p:autoUpdate/></p:growl>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Libelle de la ville" for="libellevilleU" />
+                            <p:inputText id="libellevilleU" value="#{parentBean.selectedVille.libelleville}" disabled="#{!parentBean.modifierVille}" title="Libelle de la ville" />
+                            <f:facet name="footer">
+                                <c:if test="#{parentBean.modifierVille}">
+                                    <p:commandButton value="Modifier" action="#{parentBean.updateVille()}" update=":villeForm,@widgetVar(villeupdateDialog)" icon="ui-icon-star"/>
+                                    <p:commandButton value="Annuler" update="@widgetVar(villeupdateDialog)" icon="ui-icon-star"/>
+                                </c:if>
+                                <c:if test="#{!parentBean.modifierVille}">
+                                    <p:commandButton value="Modifier" action="#{parentBean.setModifierVilleToTrue()}" update=":villeForm,:villeupdate"/>
+                                    <p:commandButton value="Fermer" update="@widgetVar(villeupdateDialog)"/>
+                                </c:if>    
+                            </f:facet>
+                        </p:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
